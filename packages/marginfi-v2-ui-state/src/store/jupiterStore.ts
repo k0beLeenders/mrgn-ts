@@ -5,9 +5,11 @@ import { TokenAccountMap, TokenAccount } from "../lib";
 import { create, StateCreator } from "zustand";
 import { BN } from "@coral-xyz/anchor";
 
+type PreferredTokenListMode = "all" | "strict";
 interface JupiterState {
   // State
   initialized: boolean;
+  isStrictTokenList: boolean;
   isRefreshingStore: boolean;
   tokenMap: Map<string, TokenInfo>;
   tokenAccountMap: TokenAccountMap;
@@ -16,6 +18,7 @@ interface JupiterState {
 
   // Actions
   fetchJupiterState: (args?: { connection?: Connection; wallet?: Wallet }) => Promise<void>;
+  setIsStrictTokenList: (isStrictTokenList: boolean) => void;
   setIsRefreshingStore: (isRefreshingStore: boolean) => void;
 }
 
@@ -26,6 +29,7 @@ function createJupiterStore() {
 const stateCreator: StateCreator<JupiterState, [], []> = (set, get) => ({
   // State
   initialized: false,
+  isStrictTokenList: false,
   isRefreshingStore: false,
   tokenMap: new Map(),
   tokenAccountMap: new Map<string, TokenAccount>(),
@@ -37,13 +41,13 @@ const stateCreator: StateCreator<JupiterState, [], []> = (set, get) => ({
     let tokenMap = get().tokenMap;
 
     if (tokenMap.size <= 1) {
-      const preferredTokenListMode: any = "ahha";
-      const tokens = await (preferredTokenListMode === "strict"
+      const tokens = await (get().isStrictTokenList
         ? await fetch("https://token.jup.ag/strict")
         : await fetch("https://token.jup.ag/all")
       ).json();
       const res = new TokenListContainer(tokens);
       const list = res.filterByChainId(101).getList();
+
       tokenMap = list.reduce((acc, item) => {
         acc.set(item.address, item);
         return acc;
@@ -87,6 +91,7 @@ const stateCreator: StateCreator<JupiterState, [], []> = (set, get) => ({
     });
   },
   setIsRefreshingStore: (isRefreshingStore: boolean) => set({ isRefreshingStore }),
+  setIsStrictTokenList: (isStrictTokenList: boolean) => set({ isStrictTokenList }),
 });
 
 export { createJupiterStore };
