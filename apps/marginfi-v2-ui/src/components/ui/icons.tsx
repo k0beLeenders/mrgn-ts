@@ -58,7 +58,6 @@ import {
   IconUsersPlus,
   IconBell,
   IconLink,
-  IconStarFilled,
 } from "@tabler/icons-react";
 import { cn } from "~/utils/themeUtils";
 
@@ -897,7 +896,6 @@ export {
   IconUsersPlus,
   IconBell,
   IconLink,
-  IconStarFilled,
 
   // customed icons
   IconBrandGoogle,
