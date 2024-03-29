@@ -118,6 +118,7 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
   const [lstDialogCallback, setLSTDialogCallback] = React.useState<(() => void) | null>(null);
   const [blacklistRoutesMap, setBlacklistRoutesMap] = React.useState<BlackListRoutesMap>();
   const [hasPreviewShown, setHasPreviewShown] = React.useState<boolean>(false);
+  const [hasForceClosedPreview, setHasForceClosedPreview] = React.useState<boolean>(false);
 
   const numberFormater = React.useMemo(() => new Intl.NumberFormat("en-US", { maximumFractionDigits: 10 }), []);
 
@@ -405,6 +406,7 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
         slippageBps: slippageBps,
         swapMode: "ExactIn",
         maxAccounts: 20,
+        platformFeeBps: 25,
         // onlyDirectRoutes: true,
       } as QuoteGetRequest;
 
@@ -717,6 +719,17 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
     wallet,
   ]);
 
+  React.useEffect(() => {
+    if (
+      actionMode === ActionType.Repay &&
+      repayMode === RepayType.RepayCollat &&
+      !hasPreviewShown &&
+      !hasForceClosedPreview
+    ) {
+      setHasPreviewShown(true);
+    }
+  }, [actionMode, repayMode, hasPreviewShown, hasForceClosedPreview]);
+
   if (!isInitialized) {
     return null;
   }
@@ -831,7 +844,10 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
                       className={cn(
                         "flex text-muted-foreground text-xs items-center cursor-pointer transition hover:text-primary cursor-pointer"
                       )}
-                      onClick={() => setHasPreviewShown(!hasPreviewShown)}
+                      onClick={() => {
+                        setHasPreviewShown(!hasPreviewShown);
+                        setHasForceClosedPreview(true);
+                      }}
                     >
                       {hasPreviewShown ? (
                         <>
