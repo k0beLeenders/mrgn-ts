@@ -51,6 +51,8 @@ type BlackListRoutesMap = {
   };
 };
 
+const FEE_BPS = 25;
+
 export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleCloseDialog }: ActionBoxProps) => {
   const [
     mfiClient,
@@ -353,6 +355,7 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
           inputMint: repayBank.info.state.mint.toBase58(),
           outputMint: bank.info.state.mint.toBase58(),
           slippageBps: slippageBps,
+          platformFeeBps: FEE_BPS,
           swapMode: "ExactIn" as any,
           maxAccounts: 20,
           // onlyDirectRoutes: true,
@@ -406,7 +409,7 @@ export const ActionBox = ({ requestedAction, requestedToken, isDialog, handleClo
         slippageBps: slippageBps,
         swapMode: "ExactIn",
         maxAccounts: 20,
-        platformFeeBps: 25,
+        platformFeeBps: FEE_BPS,
         // onlyDirectRoutes: true,
       } as QuoteGetRequest;
 
