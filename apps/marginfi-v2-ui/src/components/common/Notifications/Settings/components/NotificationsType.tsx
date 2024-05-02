@@ -1,0 +1,65 @@
+import { useDialectContext, useNotificationSubscriptions } from "@dialectlabs/react-sdk";
+import clsx from "clsx";
+import { memo } from "react";
+import { Checkbox } from "~/components/ui/checkbox";
+
+interface Props {
+  title: string;
+  description?: string;
+  enabled: boolean;
+  onChange: (newValue: boolean) => void;
+}
+
+const NotificationType = ({ title, description, enabled, onChange }: Props) => {
+  return (
+    <div className="dt-flex dt-flex-row dt-items-center dt-justify-between dt-gap-3 dt-px-4 dt-py-3">
+      <div className="dt-flex dt-flex-col dt-gap-1">
+        <span className="dt-text-text dt-font-semibold">{title}</span>
+        {description && <span className="dt-text-subtext dt-font-normal">{description}</span>}
+      </div>
+      <Checkbox checked={enabled} onChange={(e) => onChange(!!e.currentTarget.value)} />
+    </div>
+  );
+};
+
+export const NotificationTypes = memo(function NotificationTypes() {
+  const { dappAddress } = useDialectContext();
+
+  const {
+    subscriptions: notificationSubscriptions,
+    update: updateNotificationSubscription,
+    isUpdating,
+    errorUpdating: errorUpdatingNotificationSubscription,
+    errorFetching: errorFetchingNotificationsConfigs,
+  } = useNotificationSubscriptions({ dappAddress });
+  const error = errorFetchingNotificationsConfigs || errorUpdatingNotificationSubscription;
+
+  return (
+    <div className="dt-flex dt-flex-col dt-gap-2">
+      {error && <p className="text-destructive-foreground">{error.message}</p>}
+      {Boolean(notificationSubscriptions.length) && (
+        <>
+          <p className="dt-text-subtext dt-font-semibold">Notification Type</p>
+          {notificationSubscriptions.map(({ notificationType, subscription }) => (
+            <NotificationType
+              key={notificationType.id}
+              title={notificationType.name}
+              description={notificationType.trigger}
+              enabled={subscription.config.enabled}
+              onChange={(value) => {
+                if (isUpdating) return;
+                updateNotificationSubscription({
+                  notificationTypeId: notificationType.id,
+                  config: {
+                    ...subscription.config,
+                    enabled: value,
+                  },
+                });
+              }}
+            />
+          ))}
+        </>
+      )}
+    </div>
+  );
+});

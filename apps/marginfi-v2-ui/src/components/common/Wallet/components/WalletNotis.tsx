@@ -11,6 +11,9 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { IconAlertTriangle, IconCheck, IconLoader } from "~/components/ui/icons";
+import { DialectContextProvider } from "@dialectlabs/react-sdk";
+import { DialectNotifications } from "../../Notifications/NotificationsSettings";
+import { SimpleTest } from "../../Notifications/SimpleTest";
 
 enum WalletNotisState {
   DEFAULT = "default",
@@ -64,6 +67,8 @@ export const WalletNotis = () => {
           HiemdallWatchBot
         </Button>
       </p>
+
+      <SimpleTest theme={"light"} />
       <div className="space-y-2">
         <Label htmlFor="email" className="flex items-center gap-1.5 text-sm font-medium">
           Sign up for YBX alerts
